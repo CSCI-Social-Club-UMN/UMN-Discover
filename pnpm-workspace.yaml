@@ -1,3 +1,6 @@
 packages:
-  - 'client'
-  - 'server'
+  - client
+  - server
+
+onlyBuiltDependencies:
+  - esbuild
