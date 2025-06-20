@@ -12,5 +12,8 @@
   "workspaces": [
     "client",
     "server"
-  ]
+  ],
+  "dependencies": {
+    "pnpm": "^10.12.1"
+  }
 }
