@@ -125,6 +125,36 @@ const Header = ({ darkMode, setDarkMode, user, onAuthSuccess, onLogout }) => {
             >
               {darkMode ? <FaSun /> : <FaMoon />}
             </motion.button>
+            <div className="account-dropdown" ref={dropdownRef}>
+            <button 
+              className="account-button"
+              onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+            >
+              {user ? (user.displayName || user.username) : 'Account'}
+              <FaChevronDown className={`chevron ${showAccountDropdown ? 'rotated' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {showAccountDropdown && (
+                <motion.div
+                  className="dropdown-menu"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {user ? (
+                    <>
+                      <Link to="/profile" className="dropdown-item">Profile</Link>
+                      <button className="dropdown-item" onClick={handleLogout}>Log Out</button>
+                      <button className="dropdown-item delete" onClick={handleDeleteAccount}>Delete Account</button>
+                    </>
+                  ) : (
+                    <button className="dropdown-item" onClick={openAuthModal}>Google Sign In</button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           </nav>
         </div>
         <AnimatePresence>
@@ -151,6 +181,36 @@ const Header = ({ darkMode, setDarkMode, user, onAuthSuccess, onLogout }) => {
               >
                 {darkMode ? <FaSun /> : <FaMoon />}
               </motion.button>
+                <div className="account-dropdown" ref={dropdownRef}>
+                  <button 
+                    className="account-button"
+                    onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                  >
+                    {user ? (user.displayName || user.username) : 'Account'}
+                    <FaChevronDown className={`chevron ${showAccountDropdown ? 'rotated' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {showAccountDropdown && (
+                      <motion.div
+                        className="dropdown-menu"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {user ? (
+                          <>
+                            <Link to="/profile" className="dropdown-item">Profile</Link>
+                            <button className="dropdown-item" onClick={handleLogout}>Log Out</button>
+                            <button className="dropdown-item delete" onClick={handleDeleteAccount}>Delete Account</button>
+                          </>
+                        ) : (
+                          <button className="dropdown-item" onClick={openAuthModal}>Google Sign In</button>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
             </motion.nav>
           )}
         </AnimatePresence>
