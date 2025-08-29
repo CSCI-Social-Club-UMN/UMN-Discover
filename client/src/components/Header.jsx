@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSun, FaMoon, FaChevronDown } from 'react-icons/fa';
+import { FaSun, FaMoon, FaChevronDown, FaBars, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthModal from './AuthModal';
 import '../styles/Header.css';
@@ -9,6 +9,7 @@ const Header = ({ darkMode, setDarkMode, user, onAuthSuccess, onLogout }) => {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const dropdownRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -89,7 +90,7 @@ const Header = ({ darkMode, setDarkMode, user, onAuthSuccess, onLogout }) => {
     setShowAccountDropdown(false);
   };
 
-  return (
+    return (
     <>
       <header className="header">
         <div className="header-content">
@@ -102,7 +103,13 @@ const Header = ({ darkMode, setDarkMode, user, onAuthSuccess, onLogout }) => {
               <p className="tagline">University of Minnesota</p>
             </div>
           </Link>
-          <nav className="nav-links">
+          <button
+            className={`mobile-menu-btn ${darkMode ? 'dark' : 'light'}`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+          <nav className="nav-links desktop-only">
             <Link to="/map">Map</Link>
             <Link to="/clubs">Clubs</Link>
             <Link to="/calendar">Calendar</Link>
@@ -112,51 +119,49 @@ const Header = ({ darkMode, setDarkMode, user, onAuthSuccess, onLogout }) => {
             <Link to="/studyspots">Study Spots</Link>
             <motion.button
               className="theme-toggle"
-              onClick={toggleDarkMode}
+              onClick={() => setDarkMode(!darkMode)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
               {darkMode ? <FaSun /> : <FaMoon />}
             </motion.button>
-            <div className="account-dropdown" ref={dropdownRef}>
-              <button 
-                className="account-button"
-                onClick={() => setShowAccountDropdown(!showAccountDropdown)}
-              >
-                {user ? (user.displayName || user.username) : 'Account'}
-                <FaChevronDown className={`chevron ${showAccountDropdown ? 'rotated' : ''}`} />
-              </button>
-              <AnimatePresence>
-                {showAccountDropdown && (
-                  <motion.div
-                    className="dropdown-menu"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {user ? (
-                      <>
-                        <Link to="/profile" className="dropdown-item">Profile</Link>
-                        <button className="dropdown-item" onClick={handleLogout}>Log Out</button>
-                        <button className="dropdown-item delete" onClick={handleDeleteAccount}>Delete Account</button>
-                      </>
-                    ) : (
-                      <>
-                        <button className="dropdown-item" onClick={openAuthModal}>Google Sign In</button>
-                      </>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </nav>
         </div>
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.nav
+              className={`nav-links mobile-only ${darkMode ? 'dark' : 'light'}`}
+              initial={{ y: -200, opacity: 0 }}
+              animate={{ y: 85, opacity: 1 }}
+              exit={{ y: -500, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Link to="/map" onClick={() => setMobileMenuOpen(false)}>Map</Link>
+              <Link to="/clubs" onClick={() => setMobileMenuOpen(false)}>Clubs</Link>
+              <Link to="/calendar" onClick={() => setMobileMenuOpen(false)}>Calendar</Link>
+              <Link to="/grades" onClick={() => setMobileMenuOpen(false)}>Grades</Link>
+              <Link to="/social" onClick={() => setMobileMenuOpen(false)}>Social</Link>
+              <Link to="/professors" onClick={() => setMobileMenuOpen(false)}>Professors</Link>
+              <Link to="/studyspots" onClick={() => setMobileMenuOpen(false)}>Study Spots</Link>
+              <motion.button
+                className="theme-toggle"
+                onClick={() => setDarkMode(!darkMode)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {darkMode ? <FaSun /> : <FaMoon />}
+              </motion.button>
+            </motion.nav>
+          )}
+        </AnimatePresence>
       </header>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        onAuthSuccess={handleAuthSuccess}
+        onAuthSuccess={(userData, token) => {
+          onAuthSuccess(userData, token);
+          setShowAuthModal(false);
+        }}
       />
     </>
   );
