@@ -39,6 +39,7 @@ const About = () => {
 
   const contributors = [
     // role can be add later ig (e.g. "Frontend Developer", "Backend Developer")
+    { name: "Anthony-Krahmer-Git", role: "", githubUser: "Anthony-Krahmer-Git", discord: "https://discordapp.com/users/372375574561292288" },
     { name: "BlueYellow-Green", role: "", githubUser: "BlueYellow-Green", discord: "https://discordapp.com/users/733848884228521994" },
     { name: "CleverDeer", role: "", githubUser: "CleverDeer", discord: "https://discordapp.com/users/446021396254949376" },
     { name: "madebyethan", role: "", githubUser: "madebyethan", discord: "https://discordapp.com/users/1295776866707177534" },
