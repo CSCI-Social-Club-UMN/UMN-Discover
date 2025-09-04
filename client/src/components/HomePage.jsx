@@ -273,6 +273,7 @@ const HomePage = ({ darkMode, setDarkMode }) => {
           </motion.p>
           <div className="contributors-grid">
             {[ 
+              { name: "Anthony-Krahmer-Git", role: "", githubUser: "Anthony-Krahmer-Git", discord: "https://discordapp.com/users/372375574561292288" },
               { name: "BlueYellow-Green", githubUser: "BlueYellow-Green", discord: "https://discordapp.com/users/733848884228521994" },
               { name: "CleverDeer", githubUser: "CleverDeer", discord: "https://discordapp.com/users/446021396254949376" },
               { name: "madebyethan", githubUser: "madebyethan", discord: "https://discordapp.com/users/1295776866707177534" },
