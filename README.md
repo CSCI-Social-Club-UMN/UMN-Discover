@@ -89,22 +89,22 @@ ex:
 ```cd umn-nav```
 
 ## Step 5: Install all project dependencies using pnpm
-```pnpm install```
+The setup script will:
+Install dependencies with pnpm install,
+Ask whether you want to enable the account system (Google OAuth + Database).
+If enabled, it will prompt you for:
+Google OAuth credentials,
+Database credentials.
+Regardless of account system, it will also ask for Cloudinary credentials.
+And it create .env files for server and client
+<br>
+```pnpm project:setup```
 
 ## Step 6: Start the development server
 ```pnpm -r dev```
 
 The development server will start (default is http://localhost:3000)
 > (Note: The port may change later depending on setup)
-
-## If you **do NOT** want to enable accounts
-You can run the project without Google OAuth or the database.  
-
-Just add this line to your `server/.env` file:
-
-```env
-ACCOUNT=false
-```
 
 # **Attributions**
 Grade and SRT data obtained from [Social Coding @ UMN](https://www.socialcoding.net) via the University of Minnesota [Office of Data Access and Privacy](https://ogc.umn.edu/data-access-and-privacy) and 

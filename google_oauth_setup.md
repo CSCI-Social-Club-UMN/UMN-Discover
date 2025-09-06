@@ -4,15 +4,6 @@ This guide will walk you through setting up Google OAuth authentication for the 
 
 ## Quick Setup Steps
 
-## If you **do NOT** want to enable accounts
-You can run the project without Google OAuth or the database.  
-
-Just add this line to your `server/.env` file:
-
-```env
-ACCOUNT=false
-```
-
 ### 1. Create Google Cloud Project
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)

@@ -3,11 +3,16 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "project:setup": "ts-node setup.ts",
     "dev": "concurrently \"pnpm --filter client dev\" \"pnpm --filter server dev\"",
     "build": "pnpm --filter client build"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@types/node": "^24.3.1",
+    "concurrently": "^8.2.2",
+    "readline-sync": "^1.4.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   },
   "workspaces": [
     "client",
@@ -15,6 +20,7 @@
   ],
   "dependencies": {
     "body-parser": "^2.2.0",
+    "enquirer": "^2.4.1",
     "leaflet": "^1.9.4",
     "merge-descriptors": "^2.0.0",
     "uuid": "^11.1.0"
