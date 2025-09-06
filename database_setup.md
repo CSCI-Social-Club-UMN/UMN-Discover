@@ -1,14 +1,5 @@
 # UDiscover - Account Setup (PostgreSQL)
 
-## If you **do NOT** want to enable accounts
-You can run the project without Google OAuth or the database.  
-
-Just add this line to your `server/.env` file:
-
-```env
-ACCOUNT=false
-```
-
 # For Linux users (Ubuntu/Debian)
 ```
 sudo apt -y install postgresql
