@@ -9,7 +9,7 @@ This roadmap outlines major development milestones for the Platform. Tasks are g
 - [x] Grades
 - [x] Social
 - [x] Professors Look Up
-- [ ] Professors Rating System
+- [x] Professors Rating System
 - [ ] Study Spots
 - [x] Account
 
@@ -24,7 +24,7 @@ This roadmap outlines major development milestones for the Platform. Tasks are g
 ## Phase 1: General Design (Team 1)
 
 - [x] Design general site layout and UI structure
-- [ ] Build user profile system (preset avatars, bios, socials)
+- [x] Build user profile system (preset avatars, bios, socials)
 - [ ] Implement calendar & scheduling framework
 - [ ] Finalize basic frontend component library
 
@@ -32,15 +32,15 @@ This roadmap outlines major development milestones for the Platform. Tasks are g
 
 - [ ] Build resource pooling backend (study spots, dining, clubs, classes)
 - [x] Create database structure and schemas
-- [ ] Implement rating & review system
+- [x] Implement rating & review system
 - [ ] Set up professor/class score systems
 - [x] Link backend to frontend for testing
 - [ ] Add fallback/error handling
 
 ## Phase 3: GPS & Tunnel System (Team 3)
 
-- [ ] Design and implement tunnel & skyway grid system
-- [ ] Add building navigation features
+- [x] Design and implement tunnel & skyway grid system
+- [x] Add building navigation features
 - [ ] Integrate ranked locations into GPS system
 - [ ] Test route accuracy and edge cases
 
@@ -52,7 +52,7 @@ This roadmap outlines major development milestones for the Platform. Tasks are g
 
 ## Phase 5: Finalization & Launch Prep
 
-- [ ] Create production-ready build
+- [ ] Create production ready build
 - [ ] Add Docker support (optional)
 - [ ] Discuss domain setup and deployment options
 - [ ] Review for security (DDoS, auth, etc.)
