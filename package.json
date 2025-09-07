@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "project:setup": "ts-node setup.ts",
+    "project:setup": "tsx setup.ts",
     "dev": "concurrently \"pnpm --filter client dev\" \"pnpm --filter server dev\"",
     "build": "pnpm --filter client build"
   },
@@ -12,6 +12,7 @@
     "concurrently": "^8.2.2",
     "readline-sync": "^1.4.10",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   },
   "workspaces": [
