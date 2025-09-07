@@ -86,7 +86,7 @@ ex:
 > **!** replace this link to your forked repo
 
 ## Step 4: Navigate into the project folder
-```cd umn-nav```
+```cd UMN-Discover```
 
 ## Step 5: Install all project dependencies using pnpm
 The setup script will:
