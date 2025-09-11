@@ -1,0 +1,118 @@
+.filter-controls {
+    background: linear-gradient(135deg, #ffe066, #ffcc33);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 2px solid #7a0019;
+    box-shadow: 0 4px 15px rgba(122, 0, 25, 0.2);
+}
+
+.filter-controls h3 {
+    color: #7a0019;
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+    text-align: center;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #7a0019;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 2px solid #7a0019;
+    background-color: white;
+    color: #7a0019;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #ffcc33;
+    box-shadow: 0 0 0 3px rgba(255, 204, 51, 0.3);
+}
+
+.feature-filters {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #7a0019;
+}
+
+.feature-section-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #7a0019;
+    text-align: center;
+}
+
+.checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #7a0019;
+    font-weight: 500;
+    background-color: white;
+    padding: 6px 10px;
+    border-radius: 15px;
+    border: 1px solid #7a0019;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label:hover {
+    background-color: #ffe066;
+    transform: translateY(-2px);
+}
+
+.checkbox-label input {
+    margin-right: 6px;
+    width: auto;
+    accent-color: #7a0019;
+}
+
+.clear-filters-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #7a0019, #a50034);
+    color: #ffe066;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.clear-filters-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(122, 0, 25, 0.3);
+}

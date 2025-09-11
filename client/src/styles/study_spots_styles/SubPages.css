@@ -1,7 +1,55 @@
-.spots{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
+.page-container {
     padding: 25px;
+    background: linear-gradient(135deg, #ffe066 0%, #ffcc33 50%, #ffe066 100%);
+    min-height: 100vh;
 }
 
+.page-container h1 {
+    color: #7a0019;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(122, 0, 25, 0.2);
+}
+
+.results-info {
+    font-size: 14px;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background: white;
+    color: #7a0019;
+    border-radius: 10px;
+    border: 2px solid #7a0019;
+    text-align: center;
+    font-weight: bold;
+}
+
+.spots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    color: #7a0019;
+    border-radius: 20px;
+    border: 3px solid #7a0019;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(122, 0, 25, 0.2);
+}
+
+.no-results h3 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #7a0019;
+}
+
+.no-results p {
+    margin: 0;
+    font-size: 14px;
+}

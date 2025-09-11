@@ -1,0 +1,217 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(122, 0, 25, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #ffe066, #ffcc33);
+    border: 3px solid #7a0019;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(122, 0, 25, 0.3);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: #7a0019;
+    color: #ffe066;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+.modal-close:hover {
+    background: #a50034;
+    transform: scale(1.1);
+}
+
+.modal-header {
+    padding: 20px 20px 10px 20px;
+    text-align: center;
+}
+
+.modal-header h2 {
+    color: #7a0019;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+}
+
+.modal-campus {
+    color: #7a0019;
+    font-size: 14px;
+    font-style: italic;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.modal-image {
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+
+.modal-image .image-placeholder {
+    background: linear-gradient(45deg, #7a0019, #a50034);
+    color: white;
+    padding: 40px 20px;
+    border-radius: 15px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-image .image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 230, 102, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.modal-details {
+    padding: 0 20px 20px 20px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.modal-details .detail-item {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: flex-start;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #7a0019;
+    gap: 10px; 
+}
+
+.modal-details .detail-item strong {
+    color: #7a0019;
+    font-weight: bold;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.modal-details .detail-item span {
+    color: #7a0019;
+    text-align: left; 
+    flex: 1;
+}
+
+.modal-features h3 {
+    color: #7a0019;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+    text-align: center;
+}
+
+.modal-features .feature-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.modal-features .tag {
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s ease;
+}
+
+.modal-features .tag:hover {
+    transform: scale(1.1);
+}
+
+/* Tag colors */
+.tag-outlets { 
+    background: #7a0019;
+    color: #ffe066;
+}
+
+.tag-light { 
+    background: #ffcc33;
+    color: #7a0019;
+}
+
+.tag-coffee { 
+    background: #ffe066;
+    color: #7a0019;
+    border: 1px solid #7a0019;
+}
+
+.tag-group { 
+    background: linear-gradient(45deg, #7a0019, #ffcc33);
+    color: white;
+}
+
+.tag-whiteboard { 
+    background: linear-gradient(45deg, #ffcc33, #ffe066);
+    color: #7a0019;
+}
+
+.tag-printing { 
+    background: white;
+    color: #7a0019;
+    border: 2px solid #7a0019;
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-details .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .modal-details .detail-item span {
+        text-align: left;
+        margin-top: 5px;
+    }
+}
