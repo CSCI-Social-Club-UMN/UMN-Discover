@@ -27,3 +27,5 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+
+./client/.env

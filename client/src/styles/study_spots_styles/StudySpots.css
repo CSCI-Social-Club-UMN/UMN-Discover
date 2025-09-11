@@ -1,23 +1,131 @@
-#instruct{
-    width: 66%;
-    margin: auto;
+body {
+    background: linear-gradient(135deg, #ffe066 0%, #ffcc33 50%, #ffe066 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
-.button{
-    background: linear-gradient(to top left, #ffcc33, #ffe066);
+#instruct {
+    width: 80%;
+    margin: 0 auto 40px auto;
     color: #7a0019;
-    padding: 10px;
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: large;
+    text-align: center;
+    font-size: 2.2rem;
     font-weight: bold;
-    border-radius: 10px;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    border: 3px solid #7a0019;
+    box-shadow: 0 8px 25px rgba(122, 0, 25, 0.2);
+    margin-top: 40px;
 }
 
-.buttons{
+.buttons {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 25px;
+    gap: 30px;
     margin-bottom: 50px;
     margin-top: 50px;
+    flex-wrap: wrap;
+}
+
+.button {
+    background: linear-gradient(to top left, #ffcc33, #ffe066);
+    color: #7a0019;
+    padding: 15px 25px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: 3px solid #7a0019;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(122, 0, 25, 0.2);
+    position: relative;
+    overflow: hidden;
+    min-width: 200px;
+}
+
+.button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(122, 0, 25, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.button:hover::before {
+    left: 100%;
+}
+
+.button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(122, 0, 25, 0.3);
+    background: linear-gradient(to top left, #ffe066, #ffcc33);
+}
+
+.button:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .spots {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .checkbox-grid {
+        justify-content: flex-start;
+    }
+    
+    .buttons {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .button {
+        width: 90%;
+        max-width: 300px;
+    }
+    
+    #instruct {
+        width: 90%;
+        font-size: 1.8rem;
+    }
+    
+    .page-container {
+        padding: 15px;
+    }
+    
+    .page-container h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .spots {
+        grid-template-columns: 1fr;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    .filter-controls {
+        padding: 15px;
+    }
+    
+    #instruct {
+        font-size: 1.5rem;
+        padding: 15px;
+    }
 }

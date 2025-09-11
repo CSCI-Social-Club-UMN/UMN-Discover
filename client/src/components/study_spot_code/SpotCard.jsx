@@ -1,14 +1,15 @@
-import "../../styles/study_spots_styles/SpotCard.css";
+import '../../styles/study_spots_styles/SpotCard.css';
 
-function SpotCard (spot){
-    return(
-        <div className="card">
+function SpotCard({ spot, onClick }) {
+    return (
+        <div className="card" onClick={() => onClick(spot)}>
             <h4>{spot.name}</h4>
-            <h1>IMAGE WILL GO HERE</h1>
-            <p>{spot.campus}</p>
+            <div className="image-placeholder">
+                <p>IMAGE WILL GO HERE</p>
+            </div>
+            <p className="campus-name">{spot.campus}</p>
         </div>
-    )
+    );
 }
 
-
-export default SpotCard
+export default SpotCard;

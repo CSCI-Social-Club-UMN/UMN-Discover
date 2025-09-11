@@ -1,11 +1,139 @@
-.card{
-    color: #7a0019;
+.card {
     background: linear-gradient(to bottom right, #ffe066, #ffcc33);
-    padding: 10px;
+    color: #7a0019;
+    padding: 15px;
     font-size: small;
     border-radius: 20px;
+    border: 2px solid #7a0019;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(122, 0, 25, 0.2);
 }
 
-.card:hover{
+.card:hover {
     cursor: pointer;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(122, 0, 25, 0.3);
+}
+
+.card h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #7a0019;
+    line-height: 1.3;
+}
+
+.image-placeholder {
+    background: linear-gradient(45deg, #7a0019, #a50034);
+    color: white;
+    padding: 30px 15px;
+    margin: 10px 0;
+    border-radius: 15px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 230, 102, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.image-placeholder p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.campus-name {
+    font-size: 13px;
+    margin: 5px 0 10px 0;
+    color: #7a0019;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.spot-details {
+    font-size: 12px;
+    margin-top: 12px;
+    line-height: 1.4;
+}
+
+.detail-item {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.detail-item strong {
+    min-width: 80px;
+    font-weight: bold;
+    color: #7a0019;
+}
+
+.feature-tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s ease;
+}
+
+.tag:hover {
+    transform: scale(1.1);
+}
+
+/* All tags use variations of the three main colors */
+.tag-outlets { 
+    background: #7a0019;
+    color: #ffe066;
+}
+
+.tag-light { 
+    background: #ffcc33;
+    color: #7a0019;
+}
+
+.tag-coffee { 
+    background: #ffe066;
+    color: #7a0019;
+    border: 1px solid #7a0019;
+}
+
+.tag-group { 
+    background: linear-gradient(45deg, #7a0019, #ffcc33);
+    color: white;
+}
+
+.tag-whiteboard { 
+    background: linear-gradient(45deg, #ffcc33, #ffe066);
+    color: #7a0019;
+}
+
+.tag-printing { 
+    background: white;
+    color: #7a0019;
+    border: 2px solid #7a0019;
 }
