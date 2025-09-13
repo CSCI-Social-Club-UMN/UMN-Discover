@@ -7,6 +7,16 @@ import path from 'path';
 import fs from 'fs';
 import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '../config/cloudinary.js';
 
+async function verifyTurnstileToken(token) {
+  const secretKey = process.env.CLOUDFLARE_TURNSTILE_SECRET;
+  const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `secret=${secretKey}&response=${token}`
+  });
+  return res.json();
+}
+
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'umn-discover-secret-key';
 const storage = multer.memoryStorage();
@@ -29,12 +39,27 @@ const upload = multer({
   }
 });
 
-router.get('/google', 
-  passport.authenticate('google', { 
-    scope: ['profile', 'email'],
-    prompt: 'select_account'
-  })
-);
+router.get('/google', async (req, res, next) => {
+  try {
+    const cfToken = req.query.cf_token;
+    if (!cfToken) {
+      return res.status(400).json({ error: "Missing CAPTCHA token" });
+    }
+    const verify = await verifyTurnstileToken(cfToken);
+    console.log("Turnstile verify response:", verify);
+    if (!verify.success) {
+      return res.status(403).json({ error: "CAPTCHA failed" });
+    }
+    passport.authenticate('google', { 
+      scope: ['profile', 'email'],
+      prompt: 'select_account'
+    })(req, res, next);
+  } catch (err) {
+    console.error("CAPTCHA check error:", err);
+    res.status(500).json({ error: "Server error during CAPTCHA check" });
+  }
+});
+
 
 router.get('/google/callback', 
   passport.authenticate('google', { session: false }),
