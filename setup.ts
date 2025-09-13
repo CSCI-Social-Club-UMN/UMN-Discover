@@ -41,7 +41,7 @@ async function main() {
   if (!accountSystem) {
     envContent += `ACCOUNT=false\n\n`;
   }
-
+  let turnstile: { site: string; secret: string } | null = null;
   if (accountSystem) {
     const google = await prompt<{
       id: string;
@@ -99,6 +99,21 @@ async function main() {
     envContent += `CLOUDINARY_CLOUD_NAME=${cloudinary.cloudName}\n`;
     envContent += `CLOUDINARY_API_KEY=${cloudinary.apiKey}\n`;
     envContent += `CLOUDINARY_API_SECRET=${cloudinary.apiSecret}\n\n`;
+    turnstile = await prompt<{ site: string; secret: string }>([
+      {
+        type: "input",
+        name: "site",
+        message: "Enter CLOUDFLARE_TURNSTILE_SITE (Site Key):",
+        initial: "your-turnstile-site-key",
+      },
+      {
+        type: "input",
+        name: "secret",
+        message: "Enter CLOUDFLARE_TURNSTILE_SECRET (Secret Key):",
+        initial: "your-turnstile-secret-key",
+      },
+    ]);
+    envContent += `CLOUDFLARE_TURNSTILE_SECRET=${turnstile.secret}\n\n`;
   } else {
     envContent += `GOOGLE_CLIENT_ID=your-google-client-id\n`;
     envContent += `GOOGLE_CLIENT_SECRET=your-google-client-secret\n`;
@@ -106,6 +121,7 @@ async function main() {
     envContent += `CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name\n`;
     envContent += `CLOUDINARY_API_KEY=your-cloudinary-api-key\n`;
     envContent += `CLOUDINARY_API_SECRET=your-cloudinary-api-secret\n\n`;
+    envContent += `CLOUDFLARE_TURNSTILE_SECRET=your-turnstile-secret-key\n\n`;
   }
 
   envContent += `CLIENT_URL=http://localhost:3000\n\n`;
@@ -126,7 +142,15 @@ async function main() {
     initial: "3000",
   });
 
-  const clientEnv = `VITE_API_URL=http://localhost:${clientPort}/api\n`;
+  let clientEnv =
+    `VITE_API_URL=http://localhost:${clientPort}/api\n`;
+
+  if (turnstile) {
+    clientEnv += `VITE_CLOUDFLARE_TURNSTILE_SITE=${turnstile.site}\n`;
+  } else {
+    clientEnv += `VITE_CLOUDFLARE_TURNSTILE_SITE=your-turnstile-site-key\n`;
+  }
+
   fs.writeFileSync(clientEnvPath, clientEnv, { encoding: "utf-8" });
   console.log("client/.env created");
 

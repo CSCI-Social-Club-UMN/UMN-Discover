@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes, FaGoogle, FaUniversity } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/AuthModal.css';
+import Turnstile from "react-turnstile";
 
+const siteKey = import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE;
 const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,8 +19,14 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
   const handleGoogleLogin = () => {
     setLoading(true);
     setError('');
-    sessionStorage.removeItem('oauth_processed');
-    window.location.href = '/api/auth/google';
+    const turnstileToken = sessionStorage.getItem("cf_turnstile_token");
+
+    if (!turnstileToken) {
+      setLoading(false);
+      setError("Please complete CAPTCHA first.");
+      return;
+    }
+    window.location.href = `/api/auth/google?cf_token=${turnstileToken}`;
   };
 
   const resetForm = () => {
@@ -60,6 +68,12 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
               <div className="auth-description">
                 <FaUniversity className="university-icon" />
                 <h3>University of Minnesota Students Only</h3>
+                <Turnstile
+                  sitekey={siteKey}
+                  onVerify={(token) => {
+                    sessionStorage.setItem("cf_turnstile_token", token);
+                  }}
+                />
                 <p>Sign in with your UMN Google account to access the platform</p>
               </div>
 
