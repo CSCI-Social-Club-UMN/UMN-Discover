@@ -130,14 +130,14 @@ const Profile = ({ user: propUser }) => {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.username) return;
 
-      const response = await fetch(`/api/social/users/${user.username}/posts`);
+      const response = await fetch(`/api/social/users/${user.username}/reviews`);
       const data = await response.json();
-      
+
       if (data.success) {
-        setPosts(data.data.posts);
+        setPosts(data.data.reviews);
       }
     } catch (error) {
-      console.error('Failed to fetch user posts:', error);
+      console.error('Failed to fetch user reviews:', error);
     }
   };
 
@@ -640,56 +640,48 @@ const Profile = ({ user: propUser }) => {
               {activeTab === 'posts' && (
                 <div className="posts-list">
                   {posts.length > 0 ? (
-                    posts.map((post) => (
-                      <div key={post.id} className="post-item">
-                        <div className="post-header">
-                          <div className="post-avatar">
-                            {user?.avatar_url ? (
-                              <img src={user.avatar_url} alt="Avatar" />
-                            ) : (
-                              <FaUser />
-                            )}
-                          </div>
-                          <div className="post-content">
-                            <div className="post-meta">
-                              <span className="post-username">@{user?.username}</span>
-                              <span className="post-time">· {formatDate(post.created_at)}</span>
-                            </div>
-                            <p className="post-text">{post.content}</p>
-                            {post.image_url && (
-                              <div className="post-image">
-                                <img src={post.image_url} alt="Post content" />
+                    posts.map((review) => (
+                              <div key={review.id} className="post-item">
+                                <div className="post-header">
+                                  <div className="post-avatar">
+                                    {user?.avatar_url ? (
+                                      <img src={user.avatar_url} alt="Avatar" />
+                                    ) : (
+                                      <FaUser />
+                                    )}
+                                  </div>
+                                  <div className="post-content">
+                                    <div className="post-meta">
+                                      <span className="post-username">@{user?.username}</span>
+                                      <span className="post-time">· {formatDate(review.created_at)}</span>
+                                    </div>
+                                    <p className="post-text">
+                                      <strong>
+                                        {review.review_type === 'professor'
+                                          ? `Reviewed Professor ${review.professor_name || '#' + review.target_id}`
+                                          : `Reviewed Course #${review.target_id}`}
+                                      </strong>
+                                    </p>
+                                    <div className="post-stars">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <span key={star} className={`star ${star <= review.rating ? 'filled' : ''}`}>★</span>
+                                      ))}
+                                    </div>
+                                    {review.comment && (
+                                      <div className="post-review">
+                                        <p>{review.comment}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
-                            )}
-                            <div className="post-actions">
-                              <button className="action-btn">
-                                <svg className="action-icon" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                                </svg>
-                                <span>{post.likes_count}</span>
-                              </button>
-                              <button className="action-btn">
-                                <svg className="action-icon" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
-                                </svg>
-                                <span>{post.comments_count}</span>
-                              </button>
-                              <button className="action-btn">
-                                <svg className="action-icon" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                                </svg>
-                              </button>
+                            ))
+                          ) : (
+                            <div className="empty-posts">
+                              <h3>No reviews yet</h3>
+                              <p>You haven’t written any reviews yet.</p>
                             </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="empty-posts">
-                      <h3>No posts yet</h3>
-                      <p>You haven't posted anything yet.</p>
-                    </div>
-                  )}
+                          )}
                 </div>
               )}
               {activeTab === 'replies' && (
