@@ -36,7 +36,6 @@
   font-size: 1rem;
 }
 
-/* Rating Overview */
 .rating-overview {
   display: flex;
   gap: 2rem;
@@ -720,3 +719,302 @@
     gap: 0.5rem;
   }
 }
+
+.review-card {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.review-body {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.review-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--avatar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.review-headerline {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.you-tag {
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.review-time {
+  margin-left: 0.5rem;
+  color: var(--text-muted);
+}
+
+.review-rating {
+  margin-bottom: 0.4rem;
+}
+
+.review-text {
+  text-align: left;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.review-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.review-actions button {
+  font-size: 0.8rem;
+}
+
+.review-edit-form {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.review-edit-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.edit-textarea {
+  width: 100%;
+  resize: none;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.save-btn, .cancel-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.edit-textarea.themed {
+  width: 100%;
+  resize: none; 
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.inline-edit-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn.box {
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .08s ease, background .2s ease, border-color .2s ease;
+}
+
+.btn.box:hover { transform: translateY(-1px); }
+
+.btn.box.save {
+  background: var(--primary-medium);
+  color: #fff;
+  border-color: var(--primary-medium);
+}
+
+.btn.box.save:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+.btn.box.cancel {
+  background: transparent;
+  color: var(--text-primary);
+  backdrop-filter: blur(6px);
+}
+
+.btn.box.cancel:hover { background: var(--bg-tertiary); }
+
+.edit-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+}
+
+.save-btn, .cancel-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.save-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.save-btn:hover { background: #45a049; }
+
+.cancel-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.cancel-btn:hover { background: #d5d5d5; }
+
+.new-review-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.new-review-textarea,
+.edit-textarea {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 8px;
+  border-radius: 6px;
+  resize: none;
+  margin-top: 0.5rem;
+  color: var(--text);
+}
+
+.form-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #4a90e2;
+  color: white;
+}
+
+.btn.save {
+  background: #4caf50;
+  color: white;
+}
+
+.btn.cancel {
+  background: #f44336;
+  color: white;
+}
+
+.btn.box {
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn.box:hover {
+  transform: translateY(-1px);
+}
+
+.btn.box.primary {
+  background: var(--primary-medium);
+  color: #fff;
+  border-color: var(--primary-medium);
+}
+.btn.box.primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn.box.edit {
+  background: var(--primary-medium);
+  color: #fff;
+  border-color: var(--primary-medium);
+}
+.btn.box.edit:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn.box.delete {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+.btn.box.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.btn.box.save {
+  background: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
+}
+.btn.box.save:hover {
+  background: #45a049;
+  border-color: #45a049;
+}
+
+.btn.box.cancel {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.btn.box.cancel:hover {
+  background: var(--bg-tertiary);
+}
+

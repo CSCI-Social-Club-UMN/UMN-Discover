@@ -638,50 +638,78 @@ const Profile = ({ user: propUser }) => {
             </div>
             <div className="posts-content">
               {activeTab === 'posts' && (
-                <div className="posts-list">
+                <div className="reviews-list">
                   {posts.length > 0 ? (
                     posts.map((review) => (
-                              <div key={review.id} className="post-item">
-                                <div className="post-header">
-                                  <div className="post-avatar">
-                                    {user?.avatar_url ? (
-                                      <img src={user.avatar_url} alt="Avatar" />
-                                    ) : (
-                                      <FaUser />
-                                    )}
-                                  </div>
-                                  <div className="post-content">
-                                    <div className="post-meta">
-                                      <span className="post-username">@{user?.username}</span>
-                                      <span className="post-time">· {formatDate(review.created_at)}</span>
-                                    </div>
-                                    <p className="post-text">
-                                      <strong>
-                                        {review.review_type === 'professor'
-                                          ? `Reviewed Professor ${review.professor_name || '#' + review.target_id}`
-                                          : `Reviewed Course #${review.target_id}`}
-                                      </strong>
-                                    </p>
-                                    <div className="post-stars">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <span key={star} className={`star ${star <= review.rating ? 'filled' : ''}`}>★</span>
-                                      ))}
-                                    </div>
-                                    {review.comment && (
-                                      <div className="post-review">
-                                        <p>{review.comment}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ))
+                      <motion.div
+                        key={review.id}
+                        className="review-card"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="review-avatar">
+                          {user?.avatar_url ? (
+                            <img src={user.avatar_url} alt="Avatar" />
                           ) : (
-                            <div className="empty-posts">
-                              <h3>No reviews yet</h3>
-                              <p>You haven’t written any reviews yet.</p>
+                            <FaUser />
+                          )}
+                        </div>
+
+                        <div className="review-main">
+                          <div className="review-headerline">
+                            <span className="review-username">@{user?.username}</span>
+                            <span className="review-action">
+                              reviewed{" "}
+                              {review.review_type === "professor" ? (
+                                <span
+                                  className="review-target-link"
+                                  onClick={() => navigate(`/professor/${review.target_id}`)}
+                                >
+                                  Professor {review.professor_name || `#${review.target_id}`}
+                                </span>
+                              ) : (
+                                <span
+                                  className="review-target-link"
+                                  onClick={() => navigate(`/course/${review.target_id}`)}
+                                >
+                                  Course #{review.target_id}
+                                </span>
+                              )}
+                            </span>
+                            <span className="review-time">· {formatDate(review.created_at)}</span>
+                          </div>
+
+                          <div className="review-rating">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <span
+                                key={star}
+                                className={`star ${star <= review.rating ? "filled" : ""}`}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+
+                          {review.comment && (
+                            <p className="review-comment">{review.comment}</p>
+                          )}
+
+                          {review.is_anonymous && (
+                            <div className="anonymous-badge">
+                              <FaUser /> Anonymous
                             </div>
                           )}
+                        </div>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="empty-posts">
+                      <h3>No reviews yet</h3>
+                      <p>You haven’t written any reviews yet.</p>
+                    </div>
+                  )}
                 </div>
               )}
               {activeTab === 'replies' && (

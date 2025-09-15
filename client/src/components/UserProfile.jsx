@@ -62,7 +62,7 @@ const UserProfile = ({ user: currentUser }) => {
       const data = await response.json();
       
       if (data.success) {
-        setReviews(data.data.reviews);   // ✅ save into reviews state
+        setReviews(data.data.reviews); 
       }
     } catch (error) {
       console.error('Failed to fetch user reviews:', error);
@@ -261,7 +261,7 @@ const UserProfile = ({ user: currentUser }) => {
                 {activeTab === 'posts' && (
                   <motion.div
                     key="posts"
-                    className="posts-list"
+                    className="reviews-list"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
@@ -269,34 +269,49 @@ const UserProfile = ({ user: currentUser }) => {
                   >
                     {reviews.length > 0 ? (
                       reviews.map((r) => (
-                        <div key={r.id} className="post-item">
-                          <div className="post-header">
-                            <div className="post-avatar">
-                              {user?.avatar_url ? <img src={user.avatar_url} alt="Avatar" /> : <FaUser />}
-                            </div>
-                            <div className="post-content">
-                              <div className="post-meta">
-                                <span className="post-username">@{user?.username}</span>
-                                <span className="post-time">· {formatDate(r.created_at)}</span>
-                              </div>
-                              <p className="post-text">
-                                <strong>
-                                  {r.review_type === 'professor'
-                                    ? `Reviewed Professor ${r.professor_name || r.target_id}`
-                                    : `Reviewed Course #${r.target_id}`}
-                                </strong>
-                              </p>
-                              <div className="post-stars">
-                                {renderStars(r.rating)}
-                              </div>
-                              {r.comment && (
-                                <div className="post-review">
-                                  <p>{r.comment}</p>
-                                </div>
-                              )}
-                            </div>
+                        <motion.div
+                          key={r.id}
+                          className="review-card"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="review-avatar">
+                            {user?.avatar_url ? (
+                              <img src={user.avatar_url} alt="Avatar" />
+                            ) : (
+                              <FaUser />
+                            )}
                           </div>
-                        </div>
+
+                          <div className="review-main">
+                            <div className="review-headerline">
+                              <span className="review-username">@{user?.username}</span>
+                              <span className="review-action">
+                                reviewed{" "}
+                                {r.review_type === "professor" ? (
+                                  <span
+                                    className="review-target-link"
+                                    onClick={() => navigate(`/professor/${r.target_id}`)}
+                                  >
+                                    Professor {r.professor_name || `#${r.target_id}`}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className="review-target-link"
+                                    onClick={() => navigate(`/course/${r.target_id}`)}
+                                  >
+                                    Course #{r.target_id}
+                                  </span>
+                                )}
+                              </span>
+                              <span className="review-time">· {formatDate(r.created_at)}</span>
+                            </div>
+                            <div className="review-rating">{renderStars(r.rating)}</div>
+                            {r.comment && <p className="review-comment">{r.comment}</p>}
+                          </div>
+                        </motion.div>
                       ))
                     ) : (
                       <div className="empty-state">
