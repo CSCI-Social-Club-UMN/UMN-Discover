@@ -3,6 +3,21 @@ import jwt from 'jsonwebtoken';
 import pool from '../config/database.js';
 import multer from 'multer';
 import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '../config/cloudinary.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const professorMapPath = path.resolve(__dirname, '../../data/professor_map.json');
+const professorMap = JSON.parse(fs.readFileSync(professorMapPath, 'utf-8'));
+
+function getProfessorName(id) {
+  const prof = professorMap.find((p) => p.id === Number(id));
+  return prof ? prof.name : `#${id}`;
+}
+
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'umn-discover-secret-key';
@@ -95,16 +110,10 @@ router.get('/users/search', async (req, res) => {
       LIMIT 20
     `, [`%${q}%`]);
 
-    res.json({
-      success: true,
-      data: result.rows
-    });
+    res.json({ success: true, data: result.rows });
   } catch (error) {
     console.error('Search users error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to search users'
-    });
+    res.status(500).json({ success: false, error: 'Failed to search users' });
   }
 });
 
@@ -142,7 +151,6 @@ router.get('/users/:identifier', authenticateTokenOptional, async (req, res) => 
     `, [identifier]);
 
     if (result.rows.length === 0 && !isNaN(identifier)) {
-      console.log('No username match found, trying by ID:', identifier);
       result = await pool.query(`
         SELECT 
           u.id,
@@ -174,6 +182,9 @@ router.get('/users/:identifier', authenticateTokenOptional, async (req, res) => 
     }
 
     const user = result.rows[0];
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
     
     let isFollowing = false;
     if (currentUserId && currentUserId != user.id) {
@@ -194,81 +205,183 @@ router.get('/users/:identifier', authenticateTokenOptional, async (req, res) => 
     });
   } catch (error) {
     console.error('Get user profile error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch user profile'
-    });
+    res.status(500).json({ success: false, error: 'Failed to fetch user profile' });
   }
 });
 
-router.get('/users/:identifier/posts', async (req, res) => {
+router.get("/users/:identifier/reviews", async (req, res) => {
   try {
     const { identifier } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-    
-    let userResult = await pool.query(`SELECT id FROM users WHERE LOWER(username) = LOWER($1)`, [identifier]);
-    
+
+    let userResult = await pool.query(
+      `SELECT id FROM users WHERE LOWER(username) = LOWER($1)`,
+      [identifier]
+    );
     if (userResult.rows.length === 0 && !isNaN(identifier)) {
-      userResult = await pool.query(`SELECT id FROM users WHERE id = $1`, [parseInt(identifier)]);
+      userResult = await pool.query(
+        `SELECT id FROM users WHERE id = $1`,
+        [parseInt(identifier)]
+      );
     }
-    
     if (userResult.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
+      return res
+        .status(404)
+        .json({ success: false, error: "User not found" });
     }
-    
     const userId = userResult.rows[0].id;
-    
-    const result = await pool.query(`
+    const result = await pool.query(
+      `
       SELECT 
-        p.id,
-        p.content,
-        p.image_url,
-        p.created_at,
-        u.username,
-        u.id as user_id,
-        u.avatar_url,
-        COUNT(DISTINCT pl.id) as likes_count,
-        COUNT(DISTINCT c.id) as comments_count
-      FROM posts p
-      JOIN users u ON p.user_id = u.id
-      LEFT JOIN post_likes pl ON p.id = pl.post_id
-      LEFT JOIN comments c ON p.id = c.post_id
-      WHERE p.user_id = $1
-      GROUP BY p.id, u.username, u.id, u.avatar_url
-      ORDER BY p.created_at DESC
+        r.id,
+        r.review_type,
+        r.target_id,
+        r.rating,
+        r.comment,
+        r.is_anonymous,
+        r.created_at,
+        CASE 
+          WHEN r.is_anonymous THEN 'Anonymous'
+          ELSE u.username
+        END as username,
+        CASE 
+          WHEN r.is_anonymous THEN NULL
+          ELSE u.avatar_url
+        END as avatar_url
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id
+      WHERE r.user_id = $1
+      ORDER BY r.created_at DESC
       LIMIT $2 OFFSET $3
-    `, [userId, limit, offset]);
+    `,
+      [userId, limit, offset]
+    );
+    const enrichedReviews = result.rows.map((r) => ({
+      ...r,
+      professor_name:
+        r.review_type === "professor" ? getProfessorName(r.target_id) : null,
+    }));
 
     res.json({
       success: true,
       data: {
-        posts: result.rows,
-        pagination: {
-          page,
-          limit,
-          hasMore: result.rows.length === limit
-        }
+        reviews: enrichedReviews,
+        pagination: { page, limit, hasMore: result.rows.length === limit },
+      },
+    });
+  } catch (error) {
+    console.error("Get user reviews error:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch user reviews" });
+  }
+});
+
+router.get('/reviews', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const result = await pool.query(`
+      SELECT 
+        r.id,
+        r.review_type,
+        r.target_id,
+        r.rating,
+        r.comment,
+        r.is_anonymous,
+        r.created_at,
+        CASE 
+          WHEN r.is_anonymous THEN 'Anonymous'
+          ELSE u.username
+        END as username,
+        CASE 
+          WHEN r.is_anonymous THEN NULL
+          ELSE u.avatar_url
+        END as avatar_url
+      FROM reviews r
+      LEFT JOIN users u ON r.user_id = u.id
+      ORDER BY r.created_at DESC
+      LIMIT $1 OFFSET $2
+    `, [limit, offset]);
+    const enrichedReviews = result.rows.map(r => ({
+      ...r,
+      professor_name: r.review_type === 'professor'
+        ? getProfessorName(r.target_id)
+        : null
+    }));
+    res.json({
+      success: true,
+      data: {
+        reviews: enrichedReviews,
+        pagination: { page, limit, hasMore: result.rows.length === limit }
       }
     });
   } catch (error) {
-    console.error('Get user posts error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch user posts'
+    console.error('Get explore reviews error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch reviews' });
+  }
+});
+
+router.get('/reviews-feed', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const result = await pool.query(`
+      SELECT 
+        r.id,
+        r.review_type,
+        r.target_id,
+        r.rating,
+        r.comment,
+        r.is_anonymous,
+        r.created_at,
+        CASE 
+          WHEN r.is_anonymous THEN 'Anonymous'
+          ELSE u.username
+        END as username,
+        CASE 
+          WHEN r.is_anonymous THEN NULL
+          ELSE u.avatar_url
+        END as avatar_url
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id
+      WHERE (
+        r.user_id IN (SELECT following_id FROM user_follows WHERE follower_id = $1)
+        OR r.user_id = $1
+      )
+      ORDER BY r.created_at DESC
+      LIMIT $2 OFFSET $3
+    `, [userId, limit, offset]);
+
+    const enrichedReviews = result.rows.map(r => ({
+      ...r,
+      professor_name: r.review_type === 'professor'
+        ? getProfessorName(r.target_id)
+        : null
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        reviews: enrichedReviews,
+        pagination: { page, limit, hasMore: result.rows.length === limit }
+      }
     });
+  } catch (error) {
+    console.error('Get feed reviews error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch reviews feed' });
   }
 });
 
 router.get('/users/:identifier/followers', async (req, res) => {
   try {
     const { identifier } = req.params;
-    
-    console.log('Fetching followers for user:', identifier);
     let result = await pool.query(`
       SELECT 
         follower.id,
@@ -299,16 +412,10 @@ router.get('/users/:identifier/followers', async (req, res) => {
       `, [parseInt(identifier)]);
     }
 
-    res.json({
-      success: true,
-      data: result.rows
-    });
+    res.json({ success: true, data: result.rows });
   } catch (error) {
     console.error('Get followers error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch followers'
-    });
+    res.status(500).json({ success: false, error: 'Failed to fetch followers' });
   }
 });
 
@@ -346,117 +453,13 @@ router.get('/users/:identifier/following', async (req, res) => {
       `, [parseInt(identifier)]);
     }
 
-    res.json({
-      success: true,
-      data: result.rows
-    });
+    res.json({ success: true, data: result.rows });
   } catch (error) {
     console.error('Get following error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch following'
-    });
+    res.status(500).json({ success: false, error: 'Failed to fetch following' });
   }
 });
 
-router.get('/feed', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
-
-    const result = await pool.query(`
-      SELECT 
-        p.id,
-        p.content,
-        p.image_url,
-        p.created_at,
-        u.username,
-        u.id as user_id,
-        u.avatar_url,
-        COUNT(DISTINCT pl.id) as likes_count,
-        COUNT(DISTINCT c.id) as comments_count,
-        EXISTS(SELECT 1 FROM post_likes WHERE user_id = $1 AND post_id = p.id) as user_liked
-      FROM posts p
-      JOIN users u ON p.user_id = u.id
-      LEFT JOIN post_likes pl ON p.id = pl.post_id
-      LEFT JOIN comments c ON p.id = c.post_id
-      WHERE (
-        p.user_id IN (
-          SELECT following_id FROM user_follows WHERE follower_id = $1
-        )
-        OR p.user_id = $1
-      )
-      GROUP BY p.id, u.username, u.id, u.avatar_url
-      ORDER BY p.created_at DESC
-      LIMIT $2 OFFSET $3
-    `, [userId, limit, offset]);
-
-    res.json({
-      success: true,
-      data: {
-        posts: result.rows,
-        pagination: {
-          page,
-          limit,
-          hasMore: result.rows.length === limit
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Get feed error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch feed'
-    });
-  }
-});
-
-router.get('/posts', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
-    const result = await pool.query(`
-      SELECT 
-        p.id,
-        p.content,
-        p.image_url,
-        p.created_at,
-        u.username,
-        u.id as user_id,
-        u.avatar_url,
-        COUNT(DISTINCT pl.id) as likes_count,
-        COUNT(DISTINCT c.id) as comments_count
-      FROM posts p
-      JOIN users u ON p.user_id = u.id
-      LEFT JOIN post_likes pl ON p.id = pl.post_id
-      LEFT JOIN comments c ON p.id = c.post_id
-      GROUP BY p.id, u.username, u.id, u.avatar_url
-      ORDER BY p.created_at DESC
-      LIMIT $1 OFFSET $2
-    `, [limit, offset]);
-
-    res.json({
-      success: true,
-      data: {
-        posts: result.rows,
-        pagination: {
-          page,
-          limit,
-          hasMore: result.rows.length === limit
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Get posts error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch posts'
-    });
-  }
-});
 router.get('/suggestions/:userId', authenticateToken, async (req, res) => {
   try {
     const currentUserId = req.user.userId;
@@ -479,16 +482,10 @@ router.get('/suggestions/:userId', authenticateToken, async (req, res) => {
       LIMIT 5
     `, [currentUserId]);
 
-    res.json({
-      success: true,
-      data: result.rows
-    });
+    res.json({ success: true, data: result.rows });
   } catch (error) {
     console.error('Get suggestions error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch suggestions'
-    });
+    res.status(500).json({ success: false, error: 'Failed to fetch suggestions' });
   }
 });
 
@@ -498,22 +495,16 @@ router.post('/posts', authenticateToken, upload.single('image'), async (req, res
     const userId = req.user.userId;
 
     if (!content || content.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Post content is required'
-      });
+      return res.status(400).json({ success: false, error: 'Post content is required' });
     }
 
     if (content.length > 200) {
-      return res.status(400).json({
-        success: false,
-        error: 'Post content must be less than 200 characters'
-      });
+      return res.status(400).json({ success: false, error: 'Post content must be less than 200 characters' });
     }
 
-   let imageUrl = null;
-   if (req.file) {
-     try {
+    let imageUrl = null;
+    if (req.file) {
+      try {
         const result = await uploadToCloudinary(req.file.buffer, {
           folder: 'umn-discover/posts',
           transformation: {
@@ -528,10 +519,7 @@ router.post('/posts', authenticateToken, upload.single('image'), async (req, res
         imageUrl = result.secure_url;
       } catch (uploadError) {
         console.error('Post image upload error:', uploadError);
-        return res.status(500).json({
-          success: false,
-          error: 'Failed to upload image'
-        });
+        return res.status(500).json({ success: false, error: 'Failed to upload image' });
       }
     }
 
@@ -557,10 +545,7 @@ router.post('/posts', authenticateToken, upload.single('image'), async (req, res
     });
   } catch (error) {
     console.error('Create post error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to create post'
-    });
+    res.status(500).json({ success: false, error: 'Failed to create post' });
   }
 });
 
@@ -570,18 +555,12 @@ router.post('/users/:userId/follow', authenticateToken, async (req, res) => {
     const followerId = req.user.userId;
 
     if (followerId == targetUserId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Cannot follow yourself'
-      });
+      return res.status(400).json({ success: false, error: 'Cannot follow yourself' });
     }
 
     const userCheck = await pool.query('SELECT id FROM users WHERE id = $1', [targetUserId]);
     if (userCheck.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
+      return res.status(404).json({ success: false, error: 'User not found' });
     }
 
     const followCheck = await pool.query(
@@ -594,87 +573,23 @@ router.post('/users/:userId/follow', authenticateToken, async (req, res) => {
         'DELETE FROM user_follows WHERE follower_id = $1 AND following_id = $2',
         [followerId, targetUserId]
       );
-      
-      res.json({
-        success: true,
-        following: false,
-        message: 'Unfollowed user'
-      });
+      res.json({ success: true, following: false, message: 'Unfollowed user' });
     } else {
       await pool.query(
         'INSERT INTO user_follows (follower_id, following_id) VALUES ($1, $2)',
         [followerId, targetUserId]
       );
-      res.json({
-        success: true,
-        following: true,
-        message: 'Following user'
-      });
+      res.json({ success: true, following: true, message: 'Following user' });
     }
   } catch (error) {
     console.error('Follow user error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to follow/unfollow user'
-    });
-  }
-});
-
-router.post('/posts/:postId/like', authenticateToken, async (req, res) => {
-  try {
-    const { postId } = req.params;
-    const userId = req.user.userId;
-
-    const postCheck = await pool.query('SELECT id FROM posts WHERE id = $1', [postId]);
-    if (postCheck.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'Post not found'
-      });
-    }
-
-    const existingLike = await pool.query(
-      'SELECT id FROM post_likes WHERE user_id = $1 AND post_id = $2',
-      [userId, postId]
-    );
-
-    if (existingLike.rows.length > 0) {
-      await pool.query(
-        'DELETE FROM post_likes WHERE user_id = $1 AND post_id = $2',
-        [userId, postId]
-      );
-    } else {
-      await pool.query(
-        'INSERT INTO post_likes (user_id, post_id) VALUES ($1, $2)',
-        [userId, postId]
-      );
-    }
-
-    const likeCountResult = await pool.query(
-      'SELECT COUNT(*) as count FROM post_likes WHERE post_id = $1',
-      [postId]
-    );
-
-    res.json({
-      success: true,
-      data: {
-        liked: existingLike.rows.length === 0,
-        likes_count: parseInt(likeCountResult.rows[0].count)
-      }
-    });
-  } catch (error) {
-    console.error('Like post error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to like/unlike post'
-    });
+    res.status(500).json({ success: false, error: 'Failed to follow/unfollow user' });
   }
 });
 
 router.get('/posts/:postId/comments', async (req, res) => {
   try {
     const { postId } = req.params;
-
     const result = await pool.query(`
       SELECT 
         c.id,
@@ -688,17 +603,10 @@ router.get('/posts/:postId/comments', async (req, res) => {
       WHERE c.post_id = $1
       ORDER BY c.created_at ASC
     `, [postId]);
-
-    res.json({
-      success: true,
-      data: result.rows
-    });
+    res.json({ success: true, data: result.rows });
   } catch (error) {
     console.error('Get comments error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch comments'
-    });
+    res.status(500).json({ success: false, error: 'Failed to fetch comments' });
   }
 });
 
@@ -709,25 +617,16 @@ router.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     if (!content || content.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Comment content is required'
-      });
+      return res.status(400).json({ success: false, error: 'Comment content is required' });
     }
 
     if (content.length > 500) {
-      return res.status(400).json({
-        success: false,
-        error: 'Comment must be less than 500 characters'
-      });
+      return res.status(400).json({ success: false, error: 'Comment must be less than 500 characters' });
     }
 
     const postCheck = await pool.query('SELECT id FROM posts WHERE id = $1', [postId]);
     if (postCheck.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'Post not found'
-      });
+      return res.status(404).json({ success: false, error: 'Post not found' });
     }
 
     const result = await pool.query(`
@@ -737,10 +636,7 @@ router.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
     `, [userId, postId, content.trim()]);
 
     const comment = result.rows[0];
-    const userResult = await pool.query(
-      'SELECT username FROM users WHERE id = $1',
-      [userId]
-    );
+    const userResult = await pool.query('SELECT username FROM users WHERE id = $1', [userId]);
 
     res.status(201).json({
       success: true,
@@ -752,10 +648,7 @@ router.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Create comment error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to create comment'
-    });
+    res.status(500).json({ success: false, error: 'Failed to create comment' });
   }
 });
 
